@@ -15,7 +15,8 @@ import {
   getHeaderDateBadgeText,
 } from '../utils/dateUtils';
 
-const STORAGE_KEY = 'tcheventos_event_activities_v1';
+const TITLE_KEY = 'tcheventos_event_title';
+const ACTIVITIES_KEY = 'tcheventos_event_activities_v1';
 const THEME_KEY = 'tcheventos_theme_dark';
 
 /**
@@ -25,7 +26,7 @@ export function useEventSchedule() {
   // Load activities from localStorage or fall back to sample defaults
   const [activities, setActivities] = useState<Activity[]>(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
+      const saved = localStorage.getItem(ACTIVITIES_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -50,6 +51,35 @@ export function useEventSchedule() {
       return false;
     }
   });
+
+  // Event title state
+  const [eventTitle, setEventTitle] = useState<string>(() => {
+    try {
+      return localStorage.getItem(TITLE_KEY) || 'Cronograma Oficial';
+    } catch {
+      return 'Cronograma Oficial';
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(TITLE_KEY, eventTitle);
+    } catch (err) {
+      console.error('Failed to save event title to localStorage:', err);
+    }
+  }, [eventTitle]);
+
+  const handleSetEventTitle = useCallback((newTitle: string) => {
+    setEventTitle(newTitle.slice(0, 100));
+  }, []);
+
+useEffect(() => {
+  try {
+    localStorage.setItem(TITLE_KEY, eventTitle);
+  } catch (err) {
+    console.error('Failed to save event title:', err);
+  }
+}, [eventTitle]);
 
   // Active view mode ('table' | 'timeline' | 'runofshow')
   const [viewMode, setViewMode] = useState<ViewMode>('table');
@@ -92,7 +122,7 @@ export function useEventSchedule() {
   // Auto-save activities array whenever it updates
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(activities));
+      localStorage.setItem(ACTIVITIES_KEY, JSON.stringify(activities));
     } catch (err) {
       console.error('Failed to save activities to localStorage:', err);
     }
@@ -264,7 +294,8 @@ export function useEventSchedule() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.setAttribute('href', url);
-      link.setAttribute('download', `cronograma_eventos_${new Date().toISOString().slice(0, 10)}.csv`);
+      const safeTitle = eventTitle.toLowerCase().replace(/[^a-z0-9]/gi, '_');
+      link.setAttribute('download', `${safeTitle}_${new Date().toISOString().slice(0, 10)}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -308,7 +339,7 @@ export function useEventSchedule() {
   // Copy schedule data formatted specifically for pasting into Google Sheets or Excel
   const copyForGoogleSheets = useCallback(() => {
     try {
-      const header = 'Data\tHora Início\tHora Fim\tEspaço / Trilha\tTítulo da Atividade\tCategoria\tNotas\n';
+      const header = `Evento: ${eventTitle}\nData\tHora Início\tHora Fim\tEspaço / Trilha\tTítulo da Atividade\tCategoria\tNotas\n`;
       const rows = filteredActivities
         .map((act) => `${act.date}\t${act.startTime}\t${act.endTime}\t${act.track}\t${act.title}\t${act.category}\t${act.notes || ''}`)
         .join('\n');
@@ -324,6 +355,7 @@ export function useEventSchedule() {
 
   return {
     // State
+    eventTitle,
     activities,
     filteredActivities,
     filters,
@@ -339,6 +371,7 @@ export function useEventSchedule() {
     scheduleStats,
 
     // Actions
+    setEventTitle: handleSetEventTitle,
     setFilters,
     setViewMode,
     toggleDarkMode,

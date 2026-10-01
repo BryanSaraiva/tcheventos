@@ -9,6 +9,8 @@ import { formatShortDate, getDayOfWeek } from './utils/dateUtils';
 
 export const App: React.FC = () => {
   const {
+    eventTitle,
+    setEventTitle,
     activities,
     filteredActivities,
     filters,
@@ -92,9 +94,20 @@ export const App: React.FC = () => {
               <div>
                 <h1 className="font-bold text-lg leading-tight text-slate-900 dark:text-white flex items-center gap-2">
                   <span>Tchêventos</span>
-                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300">
-                    Cronograma Oficial
-                  </span>
+                  <input
+  type="text"
+  value={eventTitle}
+  maxLength={100}
+  size={Math.max(eventTitle.length, 1)}
+  onChange={(e) => setEventTitle(e.target.value)}
+  onBlur={(e) => {
+    e.target.scrollLeft = 0;
+    e.target.setSelectionRange(0, 0);
+  }}
+  placeholder="Nome do Evento..."
+  className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300 border border-transparent hover:border-emerald-300 dark:hover:border-emerald-600 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-900 focus:text-slate-900 dark:focus:text-white focus:outline-none transition cursor-pointer focus:cursor-text text-ellipsis overflow-hidden whitespace-nowrap shadow-xs max-w-[105ch]"
+  title={`Título do Evento: ${eventTitle} (Clique para editar, máx 100 caracteres)`}
+/>
                   <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 ml-1 hidden sm:inline">
                     {headerDateBadgeText}
                   </span>
