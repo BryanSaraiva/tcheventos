@@ -491,7 +491,7 @@ export const App: React.FC = () => {
       <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-4 mt-auto no-print">
         <div className="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 dark:text-slate-400 flex flex-wrap items-center justify-between gap-2">
           <span>Tchêventos • Gestão Inteligente de Cronogramas e Eventos</span>
-          <span className="font-mono text-[11px]">14h00 - 22h00 • Multi-Espaços</span>
+          <span className="font-mono text-[11px]">© 2026 Bryan Gomes Saraiva | Todos os Direitos Reservados</span>
         </div>
       </footer>
     </div>
