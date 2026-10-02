@@ -1,22 +1,4 @@
-import type { Activity, ActivityCategory, EventTrack } from '../types/event';
-
-export const DEFAULT_TRACKS: EventTrack[] = [
-  'Salão de Atos',
-  'Saguão Central / Feira',
-  'Salas de Inovação',
-  'Auditório UALL',
-];
-
-export const DEFAULT_CATEGORIES: ActivityCategory[] = [
-  'Palestra',
-  'Feira',
-  'Competição',
-  'Rodada de Negócios',
-  'Workshop',
-  'Cinema',
-  'Imersão',
-  'Cerimônia',
-];
+import type { Activity } from '../types/event';
 
 export const DEFAULT_TIME_SLOTS: string[] = [
   '14:00', '14:30', '15:00', '15:30',
@@ -25,7 +7,7 @@ export const DEFAULT_TIME_SLOTS: string[] = [
   '20:00', '20:30', '21:00', '21:30',
 ];
 
-export const GOOGLE_SHEETS_PALETTE: string[][] = [
+export const COLOR_PALETTE: string[][] = [
   ['#000000', '#434343', '#666666', '#999999', '#b7b7b7', '#cccccc', '#d9d9d9', '#efefef', '#f3f3f3', '#ffffff'],
   ['#980000', '#ff0000', '#ff9900', '#ffff00', '#00ff00', '#00ffff', '#4a86e8', '#0000ff', '#9900ff', '#ff00ff'],
   ['#e6b8af', '#f4ccd0', '#fce5cd', '#fff2cc', '#d9ead3', '#d0e0e3', '#c9daf8', '#cfe2f3', '#d9d2e9', '#ead1dc'],

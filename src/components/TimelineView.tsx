@@ -392,13 +392,19 @@ const {
                 {act.title}
               </div>
 
-              <div className="mt-1 flex items-center justify-between">
-                <span
-                  className={`inline-block px-1.5 py-0.5 rounded text-[9px] font-semibold ${badgeClass}`}
-                >
-                  {act.category}
-                </span>
-              </div>
+<div className="mt-1 flex items-center justify-between">
+  {act.category?.trim() ? (
+    <span
+      className={`inline-block px-1.5 py-0.5 rounded text-[9px] font-semibold ${badgeClass}`}
+    >
+      {act.category.trim()}
+    </span>
+  ) : (
+    <span className="text-[9px] font-medium text-slate-400 dark:text-slate-500 italic">
+      Sem categoria
+    </span>
+  )}
+</div>
             </div>
           );
         })}

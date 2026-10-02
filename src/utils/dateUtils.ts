@@ -1,14 +1,6 @@
 import type { Activity, ScheduleStats } from '../types/event';
 
 /**
- * Short month names in Portuguese
- */
-const MONTH_NAMES_PT_SHORT = [
-  'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
-  'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
-];
-
-/**
  * Full month names in Portuguese
  */
 const MONTH_NAMES_PT_FULL = [

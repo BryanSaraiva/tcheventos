@@ -148,13 +148,20 @@ export const TableView: React.FC<TableViewProps> = ({
                         </td>
 
                         {/* Category Badge Cell */}
-                        <td className="py-3.5 px-4 whitespace-nowrap">
-                          <span
-                            className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold border ${badgeClass}`}
-                          >
-                            {act.category}
-                          </span>
-                        </td>
+{/* Category Cell */}
+<td className="py-3.5 px-4 whitespace-nowrap">
+  {act.category?.trim() ? (
+    <span
+      className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold border ${badgeClass}`}
+    >
+      {act.category.trim()}
+    </span>
+  ) : (
+    <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500 italic">
+      Sem categoria
+    </span>
+  )}
+</td>
 
                         {}
                         <td className="py-3.5 px-4 text-right whitespace-nowrap">

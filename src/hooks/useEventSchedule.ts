@@ -293,7 +293,7 @@ const categoryUsageCounts = useMemo(() => {
   }, [filteredActivities]);
 
   // Open creation modal
-  const openAddModal = useCallback((defaultDate?: string) => {
+  const openAddModal = useCallback(() => {
     setEditingActivity(null);
     setModalMode('create');
     setIsModalOpen(true);

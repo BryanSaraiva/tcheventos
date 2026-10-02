@@ -115,11 +115,6 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({
       return;
     }
 
-    if (!formData.category.trim()) {
-      setErrorMessage('Por favor, informe a Categoria.');
-      return;
-    }
-
     if (formData.startTime >= formData.endTime) {
       setErrorMessage(
         'O horário de término deve ser posterior ao horário de início.'
@@ -274,7 +269,6 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({
               options={availableCategories}
               usageCounts={categoryUsageCounts}
               placeholder="Digite ou selecione..."
-              required
               onChange={(value) =>
                 setFormData((prev) => ({
                   ...prev,

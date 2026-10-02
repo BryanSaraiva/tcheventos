@@ -1,5 +1,5 @@
 import React from 'react';
-import { GOOGLE_SHEETS_PALETTE } from '../../constants/eventDefaults';
+import { COLOR_PALETTE } from '../../constants/eventDefaults';
 
 interface ColorPickerProps {
   value: string;
@@ -47,7 +47,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
 
       {isOpen && (
         <div className="mt-2 p-3 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl space-y-1.5 shadow-inner">
-          {GOOGLE_SHEETS_PALETTE.map((row, rowIndex) => (
+          {COLOR_PALETTE.map((row, rowIndex) => (
             <div
               key={rowIndex}
               className="flex gap-1 justify-between"

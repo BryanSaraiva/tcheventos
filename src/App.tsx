@@ -4,7 +4,6 @@ import { TableView } from './components/TableView';
 import { TimelineView } from './components/TimelineView';
 import { RunOfShowView } from './components/RunOfShowView';
 import { ActivityModal } from './components/ActivityModal';
-import { DEFAULT_CATEGORIES } from './constants/eventDefaults';
 import { formatShortDate, getDayOfWeek } from './utils/dateUtils';
 
 export const App: React.FC = () => {
@@ -457,7 +456,6 @@ export const App: React.FC = () => {
         onSave={saveActivity}
         availableTracks={availableTracks}
         availableCategories={availableCategories}
-        availableDates={availableDates}
         
   trackUsageCounts={trackUsageCounts}
   categoryUsageCounts={categoryUsageCounts}
