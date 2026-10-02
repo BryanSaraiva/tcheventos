@@ -217,6 +217,32 @@ const availableCategories = useMemo(() => {
   );
 }, [eventOptions.categories]);
 
+const trackUsageCounts = useMemo(() => {
+  const counts: Record<string, number> = {};
+
+  activities.forEach((activity) => {
+    if (!activity.track) return;
+
+    counts[activity.track] =
+      (counts[activity.track] || 0) + 1;
+  });
+
+  return counts;
+}, [activities]);
+
+const categoryUsageCounts = useMemo(() => {
+  const counts: Record<string, number> = {};
+
+  activities.forEach((activity) => {
+    if (!activity.category) return;
+
+    counts[activity.category] =
+      (counts[activity.category] || 0) + 1;
+  });
+
+  return counts;
+}, [activities]);
+
   // Header date range display string
   const headerDateBadgeText = useMemo(() => {
     return getHeaderDateBadgeText(availableDates);
@@ -311,6 +337,108 @@ const availableCategories = useMemo(() => {
     });
   },
   []
+);
+
+const renameOption = useCallback(
+  (
+    type: 'track' | 'category',
+    oldValue: string,
+    newValue: string
+  ) => {
+    const trimmedNewValue = newValue.trim();
+
+    if (!trimmedNewValue || oldValue === trimmedNewValue) {
+      return;
+    }
+
+    const optionKey =
+      type === 'track' ? 'tracks' : 'categories';
+
+    const activityKey =
+      type === 'track' ? 'track' : 'category';
+
+    setEventOptions((prev) => {
+      const existing = prev[optionKey];
+
+      const nextOptions = existing.map((option) =>
+        option === oldValue ? trimmedNewValue : option
+      );
+
+      return {
+        ...prev,
+        [optionKey]: nextOptions,
+      };
+    });
+
+    // Rename it across every activity immediately.
+    setActivities((prev) =>
+      prev.map((activity) =>
+        activity[activityKey] === oldValue
+          ? {
+              ...activity,
+              [activityKey]: trimmedNewValue,
+            }
+          : activity
+      )
+    );
+  },
+  []
+);
+
+const deleteOption = useCallback(
+  (
+    type: 'track' | 'category',
+    value: string
+  ) => {
+    const optionKey =
+      type === 'track' ? 'tracks' : 'categories';
+
+    const activityKey =
+      type === 'track' ? 'track' : 'category';
+
+    setEventOptions((prev) => ({
+      ...prev,
+      [optionKey]: prev[optionKey].filter(
+        (option) => option !== value
+      ),
+    }));
+
+    // Do NOT delete activities.
+    // Clear the deleted option from activities that used it.
+    setActivities((prev) =>
+      prev.map((activity) =>
+        activity[activityKey] === value
+          ? {
+              ...activity,
+              [activityKey]: '',
+            }
+          : activity
+      )
+    );
+  },
+  []
+);
+
+const renameTrack = useCallback(
+  (oldValue: string, newValue: string) =>
+    renameOption('track', oldValue, newValue),
+  [renameOption]
+);
+
+const renameCategory = useCallback(
+  (oldValue: string, newValue: string) =>
+    renameOption('category', oldValue, newValue),
+  [renameOption]
+);
+
+const deleteTrack = useCallback(
+  (value: string) => deleteOption('track', value),
+  [deleteOption]
+);
+
+const deleteCategory = useCallback(
+  (value: string) => deleteOption('category', value),
+  [deleteOption]
 );
 
   // Save activity (create or update)
@@ -474,6 +602,8 @@ const saveActivity = useCallback(
   availableDates,
   availableTracks,
   availableCategories,
+  trackUsageCounts,
+categoryUsageCounts,
   headerDateBadgeText,
   scheduleStats,
 
@@ -486,6 +616,10 @@ const saveActivity = useCallback(
     openEditModal,
     closeModal,
     saveActivity,
+    renameTrack,
+renameCategory,
+deleteTrack,
+deleteCategory,
     deleteActivity,
     clearAllActivities,
     resetToDefaults,

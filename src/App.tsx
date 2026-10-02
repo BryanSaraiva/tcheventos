@@ -22,6 +22,13 @@ export const App: React.FC = () => {
     toast,
     availableDates,
     availableTracks,
+     trackUsageCounts,
+  categoryUsageCounts,
+
+  renameTrack,
+  renameCategory,
+  deleteTrack,
+  deleteCategory,
     availableCategories,
     headerDateBadgeText,
     scheduleStats,
@@ -350,7 +357,7 @@ export const App: React.FC = () => {
                 className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none transition shadow-sm"
               >
                 <option value="all">Todas as Categorias</option>
-                {DEFAULT_CATEGORIES.map((cat) => (
+                {availableCategories.map((cat) => (
                   <option key={cat} value={cat}>
                     {cat}
                   </option>
@@ -451,6 +458,15 @@ export const App: React.FC = () => {
         availableTracks={availableTracks}
         availableCategories={availableCategories}
         availableDates={availableDates}
+        
+  trackUsageCounts={trackUsageCounts}
+  categoryUsageCounts={categoryUsageCounts}
+
+  onRenameTrack={renameTrack}
+  onDeleteTrack={deleteTrack}
+
+  onRenameCategory={renameCategory}
+  onDeleteCategory={deleteCategory}
       />
 
       {/* Toast Floating Notification Alert */}
