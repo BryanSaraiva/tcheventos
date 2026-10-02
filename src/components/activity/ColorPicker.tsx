@@ -46,7 +46,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
       </div>
 
       {isOpen && (
-        <div className="mt-2 p-3 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl space-y-1.5 shadow-inner">
+        <div className="mt-2 p-3 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl space-y-0.75 shadow-inner">
           {COLOR_PALETTE.map((row, rowIndex) => (
             <div
               key={rowIndex}
@@ -60,7 +60,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
                     onChange(hex);
                     onToggle();
                   }}
-                  className={`w-6 h-6 rounded-md border transition-transform hover:scale-110 ${
+                  className={`w-5 h-5 rounded-full border transition-transform hover:scale-110 ${
                     value === hex
                       ? 'ring-2 ring-emerald-500 ring-offset-1 border-white'
                       : 'border-black/10'
