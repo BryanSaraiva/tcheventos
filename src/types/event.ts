@@ -85,3 +85,8 @@ export interface ToastNotification {
   iconClass: string;
   type?: 'success' | 'danger' | 'warning' | 'info';
 }
+
+export interface EventOptionState {
+  tracks: string[];
+  categories: string[];
+}

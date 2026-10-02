@@ -22,6 +22,7 @@ export const App: React.FC = () => {
     toast,
     availableDates,
     availableTracks,
+    availableCategories,
     headerDateBadgeText,
     scheduleStats,
     setFilters,
@@ -448,6 +449,7 @@ export const App: React.FC = () => {
         onClose={closeModal}
         onSave={saveActivity}
         availableTracks={availableTracks}
+        availableCategories={availableCategories}
         availableDates={availableDates}
       />
 

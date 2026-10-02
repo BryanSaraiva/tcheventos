@@ -15,9 +15,15 @@ import {
   getHeaderDateBadgeText,
 } from '../utils/dateUtils';
 
-const TITLE_KEY = 'tcheventos_event_title';
+const TITLE_KEY = 'tcheventos_event_title_1';
 const ACTIVITIES_KEY = 'tcheventos_event_activities_v1';
-const THEME_KEY = 'tcheventos_theme_dark';
+const OPTIONS_KEY = 'tcheventos_event_options_v1';
+const THEME_KEY = 'tcheventos_theme_dark_1';
+
+interface EventOptionState {
+  tracks: string[];
+  categories: string[];
+}
 
 /**
  * Custom React Hook that encapsulates all state management logic for event schedule management
@@ -38,6 +44,34 @@ export function useEventSchedule() {
     }
     return DEFAULT_SAMPLE_ACTIVITIES;
   });
+
+  const [eventOptions, setEventOptions] = useState<EventOptionState>(() => {
+  try {
+    const saved = localStorage.getItem(OPTIONS_KEY);
+
+    if (saved) {
+      const parsed = JSON.parse(saved);
+
+      if (
+        parsed &&
+        Array.isArray(parsed.tracks) &&
+        Array.isArray(parsed.categories)
+      ) {
+        return {
+          tracks: parsed.tracks,
+          categories: parsed.categories,
+        };
+      }
+    }
+  } catch (err) {
+    console.error('Failed to parse event options from localStorage:', err);
+  }
+
+  return {
+    tracks: [],
+    categories: [],
+  };
+});
 
   // Dark mode state
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
@@ -80,6 +114,17 @@ useEffect(() => {
     console.error('Failed to save event title:', err);
   }
 }, [eventTitle]);
+
+useEffect(() => {
+  try {
+    localStorage.setItem(
+      OPTIONS_KEY,
+      JSON.stringify(eventOptions)
+    );
+  } catch (err) {
+    console.error('Failed to save event options:', err);
+  }
+}, [eventOptions]);
 
   // Active view mode ('table' | 'timeline' | 'runofshow')
   const [viewMode, setViewMode] = useState<ViewMode>('table');
@@ -161,12 +206,16 @@ useEffect(() => {
 
   // Extract list of all unique tracks in current activities
   const availableTracks = useMemo(() => {
-    const trackSet = new Set<string>();
-    activities.forEach((act) => {
-      if (act.track) trackSet.add(act.track);
-    });
-    return Array.from(trackSet).sort();
-  }, [activities]);
+  return [...eventOptions.tracks].sort((a, b) =>
+    a.localeCompare(b)
+  );
+}, [eventOptions.tracks]);
+
+const availableCategories = useMemo(() => {
+  return [...eventOptions.categories].sort((a, b) =>
+    a.localeCompare(b)
+  );
+}, [eventOptions.categories]);
 
   // Header date range display string
   const headerDateBadgeText = useMemo(() => {
@@ -237,23 +286,80 @@ useEffect(() => {
     setEditingActivity(null);
   }, []);
 
+  const addOption = useCallback(
+  (type: 'track' | 'category', value: string) => {
+    const trimmedValue = value.trim();
+
+    if (!trimmedValue) return;
+
+    setEventOptions((prev) => {
+      const key = type === 'track' ? 'tracks' : 'categories';
+      const existing = prev[key];
+
+      const alreadyExists = existing.some(
+        (item) => item.toLowerCase() === trimmedValue.toLowerCase()
+      );
+
+      if (alreadyExists) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        [key]: [...existing, trimmedValue],
+      };
+    });
+  },
+  []
+);
+
   // Save activity (create or update)
-  const saveActivity = useCallback((formData: ActivityFormData) => {
+const saveActivity = useCallback(
+  (formData: ActivityFormData) => {
+    // Commit newly used values to the option catalog ONLY when
+    // the activity is actually saved.
+    addOption('track', formData.track);
+    addOption('category', formData.category);
+
     if (modalMode === 'edit' && formData.id) {
       setActivities((prev) =>
-        prev.map((act) => (act.id === formData.id ? ({ ...formData, id: formData.id } as Activity) : act))
+        prev.map((act) =>
+          act.id === formData.id
+            ? ({
+                ...formData,
+                id: formData.id,
+              } as Activity)
+            : act
+        )
       );
+
       showToast('Atividade atualizada com sucesso!', 'success');
     } else {
       const newActivity: Activity = {
         ...formData,
         id: Date.now(),
       };
-      setActivities((prev) => [...prev, newActivity]);
-      showToast('Nova atividade adicionada ao cronograma!', 'success');
+
+      setActivities((prev) => [
+        ...prev,
+        newActivity,
+      ]);
+
+      showToast(
+        'Nova atividade adicionada ao cronograma!',
+        'success'
+      );
     }
+
     closeModal();
-  }, [modalMode, closeModal, showToast]);
+  },
+  [
+    modalMode,
+    closeModal,
+    showToast,
+    addOption,
+  ]
+);
 
   // Delete an activity
   const deleteActivity = useCallback((id: number) => {
@@ -354,21 +460,22 @@ useEffect(() => {
   }, [filteredActivities, showToast]);
 
   return {
-    // State
-    eventTitle,
-    activities,
-    filteredActivities,
-    filters,
-    viewMode,
-    isDarkMode,
-    isModalOpen,
-    modalMode,
-    editingActivity,
-    toast,
-    availableDates,
-    availableTracks,
-    headerDateBadgeText,
-    scheduleStats,
+  // State
+  eventTitle,
+  activities,
+  filteredActivities,
+  filters,
+  viewMode,
+  isDarkMode,
+  isModalOpen,
+  modalMode,
+  editingActivity,
+  toast,
+  availableDates,
+  availableTracks,
+  availableCategories,
+  headerDateBadgeText,
+  scheduleStats,
 
     // Actions
     setEventTitle: handleSetEventTitle,
