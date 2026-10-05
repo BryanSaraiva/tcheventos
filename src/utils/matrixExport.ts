@@ -12,7 +12,6 @@ const HEADER_FILL = 'FF0F172A';
 const HEADER_FONT = 'FFFFFFFF';
 const BORDER_COLOR = 'FFE2E8F0';
 const TRACK_FILL = 'FFF8FAFC';
-const EMPTY_TEXT = 'FF94A3B8';
 
 interface LaneActivity {
   activity: Activity;
@@ -152,19 +151,6 @@ function assignActivityLanes(
     lanes,
     laneByActivityId,
   };
-}
-
-function excelColumnName(columnNumber: number): string {
-  let number = columnNumber;
-  let result = '';
-
-  while (number > 0) {
-    const remainder = (number - 1) % 26;
-    result = String.fromCharCode(65 + remainder) + result;
-    number = Math.floor((number - 1) / 26);
-  }
-
-  return result;
 }
 
 function normalizeHexColor(color: string | undefined): string {
