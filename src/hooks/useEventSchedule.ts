@@ -15,6 +15,8 @@ import {
   getHeaderDateBadgeText,
 } from '../utils/dateUtils';
 
+import { exportActivitiesToMatrixXLSX } from '../utils/matrixExport';
+
 const TITLE_KEY = 'tcheventos_event_title_1';
 const ACTIVITIES_KEY = 'tcheventos_event_activities_v1';
 const OPTIONS_KEY = 'tcheventos_event_options_v1';
@@ -540,6 +542,41 @@ const saveActivity = useCallback(
     }
   }, [activities, showToast]);
 
+  const exportMatrix = useCallback(async () => {
+  try {
+    if (activities.length === 0) {
+      showToast(
+        'Não há atividades para exportar como matriz.',
+        'warning'
+      );
+      return;
+    }
+
+    await exportActivitiesToMatrixXLSX(
+      activities,
+      availableTracks,
+      eventTitle
+    );
+
+    showToast(
+      'Matriz exportada para Excel com sucesso!',
+      'success'
+    );
+  } catch (err) {
+    console.error('Failed to export matrix:', err);
+
+    showToast(
+      'Erro ao exportar a matriz para Excel.',
+      'danger'
+    );
+  }
+}, [
+  activities,
+  availableTracks,
+  eventTitle,
+  showToast,
+]);
+
   // Import activities from CSV file
   const importCSV = useCallback((csvText: string) => {
     try {
@@ -628,5 +665,6 @@ deleteCategory,
     importCSV,
     copyForGoogleSheets,
     showToast,
+    exportMatrix,
   };
 }
