@@ -46,7 +46,7 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({
   const [formData, setFormData] = useState<ActivityFormData>({
     date: new Date().toISOString().slice(0, 10),
     startTime: '14:00',
-    endTime: '15:00',
+    endTime: '17:30',
     track: '',
     title: '',
     category: '',
@@ -76,7 +76,7 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({
       setFormData({
         date: new Date().toISOString().slice(0, 10),
         startTime: '14:00',
-        endTime: '15:00',
+        endTime: '17:30',
         track: '',
         title: '',
         category: '',

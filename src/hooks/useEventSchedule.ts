@@ -591,7 +591,7 @@ const saveActivity = useCallback(
         id: Date.now() + idx,
         date: item.date || new Date().toISOString().slice(0, 10),
         startTime: item.startTime || '14:00',
-        endTime: item.endTime || '15:00',
+        endTime: item.endTime || '17:30',
         track: item.track || 'Salão Principal',
         title: item.title || 'Atividade Importada',
         category: item.category || 'Palestra',
