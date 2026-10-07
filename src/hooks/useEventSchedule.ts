@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import type { AppLanguage } from '../i18n/types';
 import type {
   Activity,
   ActivityFormData,
@@ -362,7 +363,9 @@ function buildMatrixClipboardContent(
  * Custom React Hook that encapsulates all state management logic
  * for event schedule management.
  */
-export function useEventSchedule() {
+export function useEventSchedule(
+  language: AppLanguage = 'pt-BR'
+) {
   /* ============================================================
      ACTIVITIES
      ============================================================ */
@@ -740,12 +743,12 @@ export function useEventSchedule() {
      HEADER DATE BADGE
      ============================================================ */
 
-  const headerDateBadgeText =
-    useMemo(() => {
-      return getHeaderDateBadgeText(
-        availableDates
-      );
-    }, [availableDates]);
+  const headerDateBadgeText = useMemo(() => {
+  return getHeaderDateBadgeText(
+    availableDates,
+    language
+  );
+}, [availableDates, language]);
 
   /* ============================================================
      FILTERED ACTIVITIES
@@ -1251,9 +1254,10 @@ export function useEventSchedule() {
     useCallback(() => {
       try {
         const csvData =
-          exportActivitiesToCSV(
-            activities
-          );
+  exportActivitiesToCSV(
+    activities,
+    language
+  );
 
         const blob = new Blob(
           ['\uFEFF' + csvData],
@@ -1322,6 +1326,7 @@ export function useEventSchedule() {
     }, [
       activities,
       eventTitle,
+      language,
       showToast,
     ]);
 

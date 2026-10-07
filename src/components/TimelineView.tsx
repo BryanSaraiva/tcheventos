@@ -1,18 +1,21 @@
 import React, { useMemo } from 'react';
 import type { Activity } from '../types/event';
+import { useLanguage } from '../i18n/useLanguage';
+import { Trans } from 'react-i18next';
 import {
   formatShortDate,
   formatFullDate,
   getDayOfWeek,
+    formatTime,
   timeToMins,
   minsToTime,
   calculateDuration,
 } from '../utils/dateUtils';
 import { CATEGORY_BADGE_STYLES } from '../constants/eventDefaults';
 
+
 interface TimelineViewProps {
   activities: Activity[];
-  availableTracks: string[];
   onEdit: (activity: Activity) => void;
   onDelete: (id: number) => void;
   onDuplicate: (activity: Activity) => void;
@@ -259,6 +262,8 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
   onDuplicate,
   onAddClick,
 }) => {
+  const { t, language } = useLanguage();
+
   const groupedByDate = useMemo(() => {
     return activities.reduce((acc, activity) => {
       const dateKey = activity.date || 'sem-data';
@@ -283,11 +288,11 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         </div>
 
         <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">
-          Nenhuma atividade na linha do tempo
+          {t('timeline.noActivities')}
         </h3>
 
         <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto mb-6">
-          Não há sessões programadas para exibir no modo matriz. Tente alterar os filtros ou cadastrar uma nova atividade.
+         {t('timeline.emptyDescription')}
         </p>
 
         <button
@@ -296,7 +301,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
           className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition active:scale-95"
         >
           <i className="fa-solid fa-plus"></i>
-          <span>Adicionar Atividade</span>
+          <span>{t('timeline.addActivity')}</span>
         </button>
       </div>
     );
@@ -307,8 +312,15 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
       {sortedDates.map((dateStr) => {
         const dayActivities = groupedByDate[dateStr];
 
-        const dayOfWeek = getDayOfWeek(dateStr);
-        const fullDate = formatFullDate(dateStr);
+const dayOfWeek = getDayOfWeek(
+  dateStr,
+  language
+);
+
+const fullDate = formatFullDate(
+  dateStr,
+  language
+);
 
         // -------------------------------------------------------
         // Dynamic timeline for THIS date only.
@@ -334,7 +346,9 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         const tracksForDay = Array.from(
   new Set(
     dayActivities
-      .map((activity) => activity.track)
+      .map(
+        (activity) => activity.track
+      )
       .filter(Boolean)
   )
 );
@@ -348,19 +362,22 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             <div className="px-6 py-4 bg-slate-50/80 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <div className="px-3 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 text-xs font-bold uppercase tracking-wider">
-                  {dayOfWeek} • {formatShortDate(dateStr)}
+                  {dayOfWeek} • {formatShortDate(
+  dateStr,
+  language
+)}
                 </div>
 
                 <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                   {fullDate}
                 </h2>
               </div>
-
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                {dayActivities.length}{' '}
-                {dayActivities.length === 1
-                  ? 'atividade'
-                  : 'atividades'}
+                              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                <Trans
+                  i18nKey="metrics.activities"
+                  count={dayActivities.length}
+                  components={{ bold: <strong /> }}
+                />
               </span>
             </div>
 
@@ -386,7 +403,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 >
                   {/* Track header */}
                   <div className="p-3 border-r border-slate-200 dark:border-slate-700/60 font-sans font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider text-[11px]">
-                    Espaço / Trilha
+                    {t('timeline.track')}
                   </div>
 
                   {/* Dynamic timeline header */}
@@ -436,7 +453,10 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                               transform: `translateY(-50%) translateX(${transform === '0' ? '0' : transform === '-100%' ? '-100%' : '-50%'})`,
                             }}
                           >
-                            {minsToTime(minutes)}
+                            {formatTime(
+  minsToTime(minutes),
+  language
+)}
                           </span>
                         </div>
                       );
@@ -612,14 +632,24 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                 onClick={() =>
                                   onEdit(activity)
                                 }
-                                title={`${activity.startTime} - ${activity.endTime} | ${activity.title}`}
+                                title={`${formatTime(
+  activity.startTime,
+  language
+)} - ${formatTime(
+  activity.endTime,
+  language
+)} | ${activity.title}`}
                               >
                                 {/* Time */}
                                 <div className="flex items-start justify-between gap-1">
                                   <span className="min-w-0 flex-1 font-mono text-[10px] font-bold text-slate-700 dark:text-slate-300 truncate">
-                                    {activity.startTime} -{' '}
-                                    {activity.endTime}{' '}
-                                    ({duration.formatted})
+                                    {formatTime(
+  activity.startTime,
+  language
+)} - {formatTime(
+  activity.endTime,
+  language
+)} ({duration.formatted})
                                   </span>
 
                                   <div className="hidden group-hover:flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -632,7 +662,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                         );
                                       }}
                                       className="p-0.5 text-slate-500 hover:text-indigo-600 dark:text-slate-400"
-                                      title="Duplicar"
+                                      title={t('timeline.duplicate')}
                                     >
                                       <i className="fa-solid fa-copy text-[10px]"></i>
                                     </button>
@@ -646,7 +676,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                         );
                                       }}
                                       className="p-0.5 text-slate-500 hover:text-rose-600 dark:text-slate-400"
-                                      title="Excluir"
+                                      title={t('timeline.delete')}
                                     >
                                       <i className="fa-solid fa-trash-can text-[10px]"></i>
                                     </button>
@@ -668,7 +698,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                     </span>
                                   ) : (
                                     <span className="text-[9px] font-medium text-slate-400 dark:text-slate-500 italic">
-                                      Sem categoria
+                                      {t('categories.none')}
                                     </span>
                                   )}
                                 </div>

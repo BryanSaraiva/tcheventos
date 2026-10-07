@@ -1,5 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useEventSchedule } from './hooks/useEventSchedule';
+import { useLanguage } from './i18n/useLanguage';
+import { Trans } from 'react-i18next';
 import { TableView } from './components/TableView';
 import { TimelineView } from './components/TimelineView';
 import { RunOfShowView } from './components/RunOfShowView';
@@ -8,9 +10,14 @@ import { formatShortDate, getDayOfWeek } from './utils/dateUtils';
 
 export const App: React.FC = () => {
   const {
+    t,
+    language,
+    setLanguage,
+  } = useLanguage();
+
+  const {
     eventTitle,
     setEventTitle,
-    activities,
     filteredActivities,
     filters,
     viewMode,
@@ -21,13 +28,12 @@ export const App: React.FC = () => {
     toast,
     availableDates,
     availableTracks,
-     trackUsageCounts,
-  categoryUsageCounts,
-
-  renameTrack,
-  renameCategory,
-  deleteTrack,
-  deleteCategory,
+    trackUsageCounts,
+    categoryUsageCounts,
+    renameTrack,
+    renameCategory,
+    deleteTrack,
+    deleteCategory,
     availableCategories,
     headerDateBadgeText,
     scheduleStats,
@@ -43,10 +49,10 @@ export const App: React.FC = () => {
     resetToDefaults,
     duplicateActivity,
     exportCSV,
+    exportMatrix,
     importCSV,
     copyForGoogleSheets,
-    exportMatrix,
-  } = useEventSchedule();
+  } = useEventSchedule(language);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -112,7 +118,9 @@ export const App: React.FC = () => {
     e.target.scrollLeft = 0;
     e.target.setSelectionRange(0, 0);
   }}
-  placeholder="Nome do Evento..."
+  placeholder={t(
+  'common.eventTitlePlaceholder'
+)}
   className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300 border border-transparent hover:border-emerald-300 dark:hover:border-emerald-600 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-900 focus:text-slate-900 dark:focus:text-white focus:outline-none transition cursor-pointer focus:cursor-text text-ellipsis overflow-hidden whitespace-nowrap shadow-xs max-w-[105ch]"
   title={`Título do Evento: ${eventTitle} (Clique para editar, máx 100 caracteres)`}
 />
@@ -121,7 +129,7 @@ export const App: React.FC = () => {
                   </span>
                 </h1>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Gerenciador e Roteiro de Eventos • 14h às 22h
+                  {t('common.subtitle')} • {t('common.timeRange')}
                 </p>
               </div>
             </div>
@@ -157,7 +165,7 @@ export const App: React.FC = () => {
                   <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
                     <div className="px-4 py-2 border-b border-slate-100 dark:border-slate-700/60">
                       <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                        Ações do Cronograma
+                        {t('menu.title')}
                       </p>
                     </div>
 
@@ -170,7 +178,7 @@ export const App: React.FC = () => {
                       className="w-full px-4 py-2.5 text-left text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/60 flex items-center gap-2.5 transition"
                     >
                       <i className="fa-solid fa-plus text-emerald-600 dark:text-emerald-400 w-4"></i>
-                      <span>Nova Atividade</span>
+                      <span>{t('menu.newActivity')}</span>
                     </button>
 
                     <button
@@ -182,19 +190,7 @@ export const App: React.FC = () => {
                       className="w-full px-4 py-2.5 text-left text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/60 flex items-center gap-2.5 transition"
                     >
                       <i className="fa-solid fa-file-import text-slate-600 dark:text-slate-300 w-4"></i>
-                      <span>Importar CSV</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        copyForGoogleSheets();
-                        setIsMenuOpen(false);
-                      }}
-                      className="w-full px-4 py-2.5 text-left text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/60 flex items-center gap-2.5 transition"
-                    >
-                      <i className="fa-solid fa-file-excel text-emerald-700 dark:text-emerald-400 w-4"></i>
-                      <span>Copiar p/ Planilhas</span>
+                      <span>{t('menu.importCsv')}</span>
                     </button>
 
                     <button
@@ -206,10 +202,20 @@ export const App: React.FC = () => {
                       className="w-full px-4 py-2.5 text-left text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/60 flex items-center gap-2.5 transition"
                     >
                       <i className="fa-solid fa-download text-slate-600 dark:text-slate-300 w-4"></i>
-                      <span>Exportar CSV</span>
+                      <span>{t('menu.exportCsv')}</span>
                     </button>
-
                     <button
+                      type="button"
+                      onClick={() => {
+                        copyForGoogleSheets();
+                        setIsMenuOpen(false);
+                      }}
+                      className="w-full px-4 py-2.5 text-left text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/60 flex items-center gap-2.5 transition"
+                    >
+                      <i className="fa-solid fa-file-excel text-emerald-700 dark:text-emerald-400 w-4"></i>
+                      <span>{t('menu.copyForSheets')}</span>
+                    </button>
+                                        <button
   type="button"
   onClick={() => {
     exportMatrix();
@@ -218,8 +224,59 @@ export const App: React.FC = () => {
   className="w-full px-4 py-2.5 text-left text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 flex items-center gap-2.5 transition"
 >
   <i className="fa-solid fa-table-cells-large w-4"></i>
-  <span>Exportar Matriz (Excel)</span>
+  <span>{t('menu.exportMatrix')}</span>
 </button>
+<div className="my-1.5 border-t border-slate-100 dark:border-slate-700/60"></div>
+
+<div className="px-4 pt-2 pb-1">
+  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+    {t('menu.language')}
+  </p>
+</div>
+
+<div className="px-2 pb-2">
+  <button
+    type="button"
+    onClick={() => {
+      setLanguage('pt-BR');
+    }}
+    className={`w-full px-3 py-2 rounded-lg text-left text-xs font-semibold flex items-center justify-between transition ${
+      language === 'pt-BR'
+        ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
+        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/60'
+    }`}
+  >
+    <span className="flex items-center gap-2">
+      <span>🇧🇷</span>
+      <span>{t('languages.pt-BR')}</span>
+    </span>
+
+    {language === 'pt-BR' && (
+      <i className="fa-solid fa-check text-emerald-600 dark:text-emerald-400"></i>
+    )}
+  </button>
+
+  <button
+    type="button"
+    onClick={() => {
+      setLanguage('en-US');
+    }}
+    className={`w-full px-3 py-2 rounded-lg text-left text-xs font-semibold flex items-center justify-between transition ${
+      language === 'en-US'
+        ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
+        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/60'
+    }`}
+  >
+    <span className="flex items-center gap-2">
+      <span>🇺🇸</span>
+      <span>{t('languages.en-US')}</span>
+    </span>
+
+    {language === 'en-US' && (
+      <i className="fa-solid fa-check text-emerald-600 dark:text-emerald-400"></i>
+    )}
+  </button>
+</div>
 
                     <div className="my-1.5 border-t border-slate-100 dark:border-slate-700/60"></div>
 
@@ -232,7 +289,7 @@ export const App: React.FC = () => {
                       className="w-full px-4 py-2.5 text-left text-xs font-semibold text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30 flex items-center gap-2.5 transition"
                     >
                       <i className="fa-solid fa-rotate-left w-4"></i>
-                      <span>Restaurar Dados Padrão</span>
+                      <span>{t('menu.restoreDefaults')}</span>
                     </button>
 
                     <button
@@ -244,7 +301,7 @@ export const App: React.FC = () => {
                       className="w-full px-4 py-2.5 text-left text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center gap-2.5 transition"
                     >
                       <i className="fa-solid fa-trash-can w-4"></i>
-                      <span>Limpar Todas as Atividades</span>
+                      <span>{t('menu.clearAll')}</span>
                     </button>
                   </div>
                 )}
@@ -275,7 +332,9 @@ export const App: React.FC = () => {
                     : 'bg-slate-100 dark:bg-slate-700/70 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
                 }`}
               >
-                Todos os Dias ({activities.length})
+                {t('filters.allDays', {
+  count: availableDates.length,
+})}
               </button>
               {availableDates.map((dateStr) => {
                 const isSelected = filters.filterDay === dateStr;
@@ -290,7 +349,13 @@ export const App: React.FC = () => {
                         : 'bg-slate-100 dark:bg-slate-700/70 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
                     }`}
                   >
-                    {getDayOfWeek(dateStr)} • {formatShortDate(dateStr)}
+                    {getDayOfWeek(
+  dateStr,
+  language
+)} • {formatShortDate(
+  dateStr,
+  language
+)}
                   </button>
                 );
               })}
@@ -300,12 +365,24 @@ export const App: React.FC = () => {
             <div className="flex items-center gap-3 text-xs font-medium text-slate-600 dark:text-slate-300">
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-700/50">
                 <i className="fa-solid fa-list-check text-emerald-600 dark:text-emerald-400"></i>
-                <span><strong>{filteredActivities.length}</strong> atividades</span>
+                <span>
+  <Trans
+    i18nKey="metrics.activities"
+    count={filteredActivities.length}
+    components={{ bold: <strong /> }}
+  />
+</span>
               </div>
 
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-700/50">
                 <i className="fa-regular fa-clock text-indigo-600 dark:text-indigo-400"></i>
-                <span><strong>{scheduleStats.formattedDuration}</strong> programadas</span>
+                <span>
+  <Trans
+    i18nKey="metrics.scheduled"
+    values={{ duration: scheduleStats.formattedDuration }}
+    components={{ bold: <strong /> }}
+  />
+</span>
               </div>
 
               {scheduleStats.conflictCount > 0 && (
@@ -314,7 +391,12 @@ export const App: React.FC = () => {
                   title="Existem atividades simultâneas no mesmo espaço!"
                 >
                   <i className="fa-solid fa-triangle-exclamation"></i>
-                  <span>{scheduleStats.conflictCount} sobreposição(ões)</span>
+                  <span>
+  {t('metrics.overlaps', {
+    count:
+      scheduleStats.conflictCount,
+  })}
+</span>
                 </div>
               )}
             </div>
@@ -331,7 +413,9 @@ export const App: React.FC = () => {
                 type="text"
                 value={filters.searchQuery}
                 onChange={(e) => setFilters({ ...filters, searchQuery: e.target.value })}
-                placeholder="Buscar por título, espaço ou nota..."
+                placeholder={t(
+  'filters.searchPlaceholder'
+)}
                 className="w-full pl-9 pr-8 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-emerald-500 outline-none transition shadow-sm"
               />
               {filters.searchQuery && (
@@ -352,7 +436,9 @@ export const App: React.FC = () => {
                 onChange={(e) => setFilters({ ...filters, locationFilter: e.target.value })}
                 className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none transition shadow-sm"
               >
-                <option value="all">Todos os Espaços / Trilhas</option>
+                <option value="all">
+  {t('filters.allTracks')}
+</option>
                 {availableTracks.map((tr) => (
                   <option key={tr} value={tr}>
                     {tr}
@@ -368,7 +454,9 @@ export const App: React.FC = () => {
                 onChange={(e) => setFilters({ ...filters, categoryFilter: e.target.value })}
                 className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none transition shadow-sm"
               >
-                <option value="all">Todas as Categorias</option>
+                <option value="all">
+  {t('filters.allCategories')}
+</option>
                 {availableCategories.map((cat) => (
                   <option key={cat} value={cat}>
                     {cat}
@@ -387,10 +475,10 @@ export const App: React.FC = () => {
                     ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm'
                     : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
                 }`}
-                title="Visualização em Tabela Detalhada"
+                title={t('views.tableTitle')}
               >
                 <i className="fa-solid fa-table-list"></i>
-                <span className="hidden lg:inline">Tabela</span>
+                <span className="hidden lg:inline">{t('views.table')}</span>
               </button>
 
               <button
@@ -401,10 +489,10 @@ export const App: React.FC = () => {
                     ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm'
                     : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
                 }`}
-                title="Visualização em Matriz Visual / Linha do Tempo"
+                title={t('views.timelineTitle')}
               >
                 <i className="fa-solid fa-chart-gantt"></i>
-                <span className="hidden lg:inline">Matriz</span>
+                <span className="hidden lg:inline">{t('views.timeline')}</span>
               </button>
 
               <button
@@ -415,10 +503,10 @@ export const App: React.FC = () => {
                     ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm'
                     : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
                 }`}
-                title="Roteiro de Produção Minuto a Minuto"
+                title={t('views.runOfShowTitle')}
               >
                 <i className="fa-solid fa-clipboard-list"></i>
-                <span className="hidden lg:inline">Roteiro</span>
+                <span className="hidden lg:inline">{t('views.runOfShow')}</span>
               </button>
             </div>
 
@@ -440,7 +528,6 @@ export const App: React.FC = () => {
         {viewMode === 'timeline' && (
           <TimelineView
             activities={filteredActivities}
-            availableTracks={availableTracks}
             onEdit={openEditModal}
             onDelete={deleteActivity}
             onDuplicate={duplicateActivity}
