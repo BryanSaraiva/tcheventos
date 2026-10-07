@@ -254,7 +254,6 @@ function assignActivityLanes(
 
 export const TimelineView: React.FC<TimelineViewProps> = ({
   activities,
-  availableTracks,
   onEdit,
   onDelete,
   onDuplicate,
@@ -333,13 +332,12 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         // -------------------------------------------------------
 
         const tracksForDay = Array.from(
-          new Set([
-            ...availableTracks,
-            ...dayActivities.map(
-              (activity) => activity.track
-            ),
-          ])
-        ).filter(Boolean);
+  new Set(
+    dayActivities
+      .map((activity) => activity.track)
+      .filter(Boolean)
+  )
+);
 
         return (
           <div
@@ -677,13 +675,6 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                               </div>
                             );
                           })}
-
-                          {/* Empty Track */}
-                          {trackActivities.length === 0 && (
-                            <div className="absolute inset-0 flex items-center justify-center text-[11px] text-slate-400 dark:text-slate-600 italic">
-                              Nenhuma atividade neste espaço
-                            </div>
-                          )}
                         </div>
                       </div>
                     );

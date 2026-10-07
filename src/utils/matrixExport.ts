@@ -415,7 +415,6 @@ function setActivityCell(
 function renderMatrixSection(
   worksheet: ExcelJS.Worksheet,
   startRow: number,
-  date: string,
   dayActivities: Activity[],
   availableTracks: string[]
 ): number {
@@ -764,7 +763,6 @@ function createDateWorksheet(
   renderMatrixSection(
     worksheet,
     1,
-    date,
     dayActivities,
     availableTracks
   );
@@ -901,7 +899,6 @@ function createMasterWorksheet(
       renderMatrixSection(
         worksheet,
         currentRow,
-        date,
         dayActivities,
         availableTracks
       );
