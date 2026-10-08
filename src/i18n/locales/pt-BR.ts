@@ -117,6 +117,9 @@ const ptBR = {
       'Esta opção é usada em {{count}} atividades. Remover de todas?',
 
     remove: 'Remover',
+
+    open: 'Abrir opções',
+close: 'Fechar opções',
   },
 
   categories: {

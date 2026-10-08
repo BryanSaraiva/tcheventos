@@ -117,6 +117,9 @@ const enUS = {
       'This option is used in {{count}} activities. Remove from all?',
 
     remove: 'Remove',
+
+    open: 'Open options',
+close: 'Close options',
   },
 
   categories: {
