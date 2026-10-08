@@ -220,8 +220,41 @@ const enUS = {
   },
 
   runOfShow: {
-    // We'll populate these after auditing RunOfShowView.tsx.
-  },
+  title: 'Production Run of Show',
+
+  description:
+    'Minute-by-minute sequential view for the technical and backstage team',
+
+  allTracks: 'All Spaces',
+
+  print: 'Print Production Run of Show',
+
+  emptyTitle: 'No activities in the run of show',
+
+  emptyDescription:
+    'There are no production activities scheduled at the moment. Add activities to build the minute-by-minute run of show.',
+
+  cue: 'CUE',
+
+  conflict:
+    'Space Conflict',
+
+  conflictTitle:
+    'Warning: There is a time overlap in this space!',
+
+  edit: 'Edit',
+  duplicate: 'Duplicate',
+  delete: 'Delete',
+
+  viewProductionNotes:
+    'View production notes',
+
+  hideTechnicalNotes:
+    'Hide technical notes',
+
+  technicalGuidance:
+    'Technical Guidance / Brief:',
+},
 
 "metrics": {
   "activities_one": "<bold>{{count}}</bold> activity",

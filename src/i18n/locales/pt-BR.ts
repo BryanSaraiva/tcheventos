@@ -219,9 +219,42 @@ const ptBR = {
     date: 'Data',
   },
 
-  runOfShow: {
-    // We'll populate these after auditing RunOfShowView.tsx.
-  },
+runOfShow: {
+  title: 'Roteiro de Produção (Run of Show)',
+
+  description:
+    'Visão sequencial minuto a minuto para equipe técnica e backstage',
+
+  allTracks: 'Todos os Espaços',
+
+  print: 'Imprimir Roteiro de Produção',
+
+  emptyTitle: 'Nenhuma atividade no roteiro',
+
+  emptyDescription:
+    'Não há atividades de produção programadas no momento. Adicione atividades para construir o roteiro minuto a minuto.',
+
+  cue: 'CUE',
+
+  conflict:
+    'Conflito de Espaço',
+
+  conflictTitle:
+    'Atenção: Existe sobreposição de horário neste mesmo espaço!',
+
+  edit: 'Editar',
+  duplicate: 'Duplicar',
+  delete: 'Excluir',
+
+  viewProductionNotes:
+    'Ver notas de produção',
+
+  hideTechnicalNotes:
+    'Ocultar notas técnicas',
+
+  technicalGuidance:
+    'Orientação Técnica / Pauta:',
+},
 
   metrics: {
   activities_one: '<bold>{{count}}</bold> atividade',
