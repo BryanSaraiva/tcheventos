@@ -71,6 +71,61 @@ function getLightFill(color?: string): string {
   return `FF${lightChannels.join('')}`;
 }
 
+function estimateWrappedLines(
+  text: string,
+  maxCharsPerLine: number
+): number {
+  const paragraphs = text.split(/\r?\n/);
+  let totalLines = 0;
+
+  for (const paragraph of paragraphs) {
+    const words = paragraph.trim().split(/\s+/).filter(Boolean);
+
+    if (words.length === 0) {
+      totalLines++;
+      continue;
+    }
+
+    let lineLength = 0;
+    totalLines++;
+
+    for (const word of words) {
+      // Handle exceptionally long words that cannot fit on one line.
+      if (word.length > maxCharsPerLine) {
+        if (lineLength > 0) {
+          totalLines++;
+          lineLength = 0;
+        }
+
+        const wrappedWordLines = Math.ceil(
+          word.length / maxCharsPerLine
+        );
+
+        totalLines += wrappedWordLines - 1;
+
+        lineLength =
+          word.length % maxCharsPerLine || maxCharsPerLine;
+
+        continue;
+      }
+
+      const nextLength =
+        lineLength === 0
+          ? word.length
+          : lineLength + 1 + word.length;
+
+      if (nextLength > maxCharsPerLine) {
+        totalLines++;
+        lineLength = word.length;
+      } else {
+        lineLength = nextLength;
+      }
+    }
+  }
+
+  return Math.max(1, totalLines);
+}
+
 function capitalizeFirst(
   value: string,
   language: AppLanguage
@@ -240,7 +295,22 @@ const color = getActivityColor(activity.color);
 const lightFill = getLightFill(activity.color);
 
 const row = worksheet.getRow(rowNumber);
-row.height = speakerNames ? 58 : 46;
+
+const titleLines = estimateWrappedLines(activity.title, 54);
+const locationLines = estimateWrappedLines(
+  activity.track || '',
+  62
+);
+const speakerLines = speakerNames
+  ? estimateWrappedLines(speakerNames, 70)
+  : 0;
+
+// Estimate the height needed by each text line, plus slim padding.
+row.height =
+  titleLines * 18 +
+  locationLines * 12.5 +
+  speakerLines * 12 +
+  4;
 
     // Column A: start and end times on separate lines.
     const timeCell = worksheet.getCell(rowNumber, 1);
@@ -365,7 +435,7 @@ export async function exportActivitiesToProgramXLSX(
     },
   };
 
-  worksheet.properties.defaultRowHeight = 46;
+  worksheet.properties.defaultRowHeight = 15;
 
   // Main event title.
   worksheet.mergeCells(1, 1, 1, 2);
