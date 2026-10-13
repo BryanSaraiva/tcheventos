@@ -1,9 +1,11 @@
 import ExcelJS from 'exceljs';
 import type { Activity } from '../types/event';
+import type { AppLanguage } from '../i18n/types';
 import {
   calculateDuration,
   minsToTime,
   timeToMins,
+  formatShortDate,
 } from './dateUtils';
 
 const GRID_INTERVAL_MINUTES = 30;
@@ -14,6 +16,32 @@ const BORDER_COLOR = 'FFE2E8F0';
 const TRACK_FILL = 'FFF8FAFC';
 const MASTER_TITLE_FILL = 'FFECFDF5';
 const MASTER_TITLE_FONT = 'FF065F46';
+
+interface MatrixExportLabels {
+  masterSheetName: string;
+  track: string;
+  noCategory: string;
+}
+
+function getMatrixExportLabels(
+  language: AppLanguage
+): MatrixExportLabels {
+  if (language === 'en-US') {
+    return {
+      masterSheetName:
+        'Matrix - All Days',
+      track: 'Space / Track',
+      noCategory: 'No category',
+    };
+  }
+
+  return {
+    masterSheetName:
+      'Matriz - Todos os Dias',
+    track: 'Espaço / Trilha',
+    noCategory: 'Sem categoria',
+  };
+}
 
 interface LaneActivity {
   activity: Activity;
@@ -339,20 +367,23 @@ function setActivityCell(
       },
     ];
 
-  if (activity.category?.trim()) {
-    richText.push({
-      text: `\n${activity.category.trim()}`,
-      font: {
-        name: 'Aptos',
-        size: 9,
-        bold: false,
-        italic: false,
-        color: {
-          argb: 'FF475569',
-        },
-      },
-    });
-  }
+    const speakerNames = (activity.speakers ?? '')
+  .split(/\r?\n/)
+  .map((name) => name.trim())
+  .filter(Boolean)
+  .join(' · ');
+
+if (speakerNames) {
+  richText.push({
+    text: `\n${speakerNames}`,
+    font: {
+      name: 'Aptos',
+      size: 9,
+      bold: false,
+      color: { argb: 'FF475569' },
+    },
+  });
+}
 
   startCell.value = {
     richText,
@@ -416,8 +447,12 @@ function renderMatrixSection(
   worksheet: ExcelJS.Worksheet,
   startRow: number,
   dayActivities: Activity[],
-  availableTracks: string[]
+  availableTracks: string[],
+  language: AppLanguage
 ): number {
+ const labels =
+    getMatrixExportLabels(language);
+
   const timePoints =
     buildTimePoints(dayActivities);
 
@@ -451,7 +486,7 @@ function renderMatrixSection(
     );
 
   trackHeader.value =
-    'Espaço / Trilha';
+  labels.track;
 
   trackHeader.font = {
     name: 'Aptos',
@@ -746,10 +781,17 @@ function createDateWorksheet(
   workbook: ExcelJS.Workbook,
   date: string,
   dayActivities: Activity[],
-  availableTracks: string[]
+  availableTracks: string[],
+  language: AppLanguage
 ): void {
-  const safeSheetName =
-    date.replace(/\//g, '-');
+const safeSheetName =
+  formatShortDate(
+    date,
+    language
+  ).replace(
+    /\//g,
+    '-'
+  );
 
   const worksheet =
     workbook.addWorksheet(
@@ -764,7 +806,8 @@ function createDateWorksheet(
     worksheet,
     1,
     dayActivities,
-    availableTracks
+    availableTracks,
+    language
   );
 }
 
@@ -779,11 +822,15 @@ function createMasterWorksheet(
   workbook: ExcelJS.Workbook,
   activities: Activity[],
   availableTracks: string[],
-  eventTitle: string
+  eventTitle: string,
+  language: AppLanguage
 ): void {
+    const labels =
+    getMatrixExportLabels(language);
+    
   const worksheet =
     workbook.addWorksheet(
-      'Matriz - Todos os Dias'
+      labels.masterSheetName
     );
 
   configureWorksheet(
@@ -852,8 +899,14 @@ function createMasterWorksheet(
         1
       );
 
-    titleCell.value =
-      `${eventTitle} — ${date}`;
+    const displayDate =
+  formatShortDate(
+    date,
+    language
+  );
+
+titleCell.value =
+  `${eventTitle} — ${displayDate}`;
 
     titleCell.font = {
       name: 'Aptos',
@@ -900,7 +953,8 @@ function createMasterWorksheet(
         worksheet,
         currentRow,
         dayActivities,
-        availableTracks
+        availableTracks,
+        language
       );
 
     /*
@@ -913,7 +967,8 @@ function createMasterWorksheet(
 export async function exportActivitiesToMatrixXLSX(
   activities: Activity[],
   availableTracks: string[],
-  eventTitle: string
+  eventTitle: string,
+  language: AppLanguage
 ): Promise<void> {
   if (
     activities.length === 0
@@ -946,7 +1001,8 @@ export async function exportActivitiesToMatrixXLSX(
     workbook,
     activities,
     availableTracks,
-    eventTitle
+    eventTitle,
+    language
   );
 
   /*
@@ -977,7 +1033,8 @@ export async function exportActivitiesToMatrixXLSX(
       workbook,
       date,
       dayActivities,
-      availableTracks
+      availableTracks,
+      language
     );
   }
 

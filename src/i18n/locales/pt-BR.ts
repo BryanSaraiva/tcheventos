@@ -18,6 +18,7 @@ const ptBR = {
     exportCsv: 'Exportar CSV',
     exportMatrix:
       'Exportar Matriz (Excel)',
+      exportProgram: 'Exportar Programação (Excel)',
 
     restoreDefaults:
       'Restaurar Dados Padrão',
@@ -89,6 +90,10 @@ const ptBR = {
 
     createDescription:
       'Adicione uma nova sessão ao evento',
+
+      speakersLabel: 'Palestrantes / participantes (opcional)',
+speakersPlaceholder: 'Digite um nome por linha...',
+speakersHint: 'Inclua palestrantes, painelistas, convidados ou facilitadores. Deixe em branco quando não se aplicar.',
 
     cancel: 'Cancelar',
     saveChanges: 'Salvar Alterações',
@@ -202,6 +207,15 @@ close: 'Fechar opções',
 
     matrixCopied:
       'Matriz copiada! Cole diretamente no Google Planilhas.',
+
+      programExported:
+  'Programação exportada para Excel com sucesso!',
+
+programNothingToExport:
+  'Não há atividades para exportar na programação.',
+
+programExportFailed:
+  'Erro ao exportar a programação para Excel.',
 
     allActivitiesCleared:
       'Todas as atividades foram apagadas.',

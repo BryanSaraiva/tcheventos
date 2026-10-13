@@ -78,6 +78,7 @@ export const ActivityModal: React.FC<
 
       color: '#3c78d8',
       notes: '',
+      speakers: '',
     });
 
   const [
@@ -129,6 +130,8 @@ export const ActivityModal: React.FC<
 
         notes:
           activity.notes || '',
+
+          speakers: activity.speakers ?? '',
       });
     } else {
       setFormData({
@@ -145,6 +148,7 @@ export const ActivityModal: React.FC<
 
         color: '#3c78d8',
         notes: '',
+        speakers: '',
       });
     }
 
@@ -548,6 +552,26 @@ export const ActivityModal: React.FC<
               className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-emerald-500 outline-none resize-none"
             />
           </div>
+
+          {/* Speakers / Participants */}
+<div>
+  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+    {t('activityModal.speakersLabel')}
+  </label>
+
+  <textarea
+    name="speakers"
+    rows={2}
+    value={formData.speakers ?? ''}
+    onChange={handleChange}
+    placeholder={t('activityModal.speakersPlaceholder')}
+    className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-emerald-500 outline-none resize-y"
+  />
+
+  <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
+    {t('activityModal.speakersHint')}
+  </p>
+</div>
 
           {/* ====================================================
               ACTIONS

@@ -18,6 +18,7 @@ const enUS = {
     exportCsv: 'Export CSV',
     exportMatrix:
       'Export Matrix (Excel)',
+exportProgram: 'Export Event Schedule (Excel)',
 
     restoreDefaults:
       'Restore Default Data',
@@ -89,6 +90,10 @@ const enUS = {
 
     createDescription:
       'Add a new session to the event',
+
+      speakersLabel: 'Speakers / participants (optional)',
+speakersPlaceholder: 'Enter one name per line...',
+speakersHint: 'Add speakers, panelists, guests, or facilitators. Leave blank when not applicable.',
 
     cancel: 'Cancel',
     saveChanges: 'Save Changes',
@@ -202,6 +207,15 @@ close: 'Close options',
 
     matrixCopied:
       'Matrix copied! Paste it directly into Google Sheets.',
+
+      programExported:
+  'Event schedule exported to Excel successfully!',
+
+programNothingToExport:
+  'There are no activities to export in the event schedule.',
+
+programExportFailed:
+  'Failed to export the event schedule to Excel.',
 
     allActivitiesCleared:
       'All activities were deleted.',

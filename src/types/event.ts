@@ -39,6 +39,7 @@ export interface Activity {
   category: ActivityCategory | string;
   color: string; // Hex color code or 'default'
   notes: string;
+  speakers?: string;
 }
 
 /**
@@ -54,6 +55,7 @@ export interface ActivityFormData {
   category: ActivityCategory | string;
   color: string;
   notes: string;
+  speakers: string;
 }
 
 

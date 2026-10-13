@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import type { AppLanguage } from '../i18n/types';
+import i18n from '../i18n';
+import { exportActivitiesToProgramXLSX } from '../utils/programExport';
 import type {
   Activity,
   ActivityFormData,
@@ -14,6 +16,7 @@ import {
   exportActivitiesToCSV,
   parseCSVToActivities,
   getHeaderDateBadgeText,
+  formatShortDate,
 } from '../utils/dateUtils';
 import { exportActivitiesToMatrixXLSX } from '../utils/matrixExport';
 import {
@@ -60,7 +63,8 @@ function escapeHtml(value: string): string {
 function buildMatrixClipboardContent(
   matrixActivities: Activity[],
   availableTracks: string[],
-  eventTitle: string
+  eventTitle: string,
+   language: AppLanguage
 ): {
   text: string;
   html: string;
@@ -140,12 +144,23 @@ function buildMatrixClipboardContent(
       });
     });
 
-    textSections.push(
-      `Data: ${date}\n` +
-        textRows
-          .map((row) => row.join('\t'))
-          .join('\n')
-    );
+const displayDate =
+  formatShortDate(
+    date,
+    language
+  );
+
+const dateLabel =
+  language === 'en-US'
+    ? 'Date'
+    : 'Data';
+
+textSections.push(
+  `${dateLabel}: ${displayDate}\n` +
+  textRows
+    .map((row) => row.join('\t'))
+    .join('\n')
+);
 
     /* =========================================================
        RICH HTML
@@ -157,7 +172,7 @@ function buildMatrixClipboardContent(
           font-family: Arial, sans-serif;
           margin: 0 0 8px 0;
         ">
-          ${escapeHtml(eventTitle)} — ${escapeHtml(date)}
+  ${escapeHtml(eventTitle)} — ${escapeHtml(displayDate)}
         </h3>
 
         <table
@@ -1351,7 +1366,8 @@ export function useEventSchedule(
         await exportActivitiesToMatrixXLSX(
           activities,
           availableTracks,
-          eventTitle
+          eventTitle,
+          language
         );
 
         showToast(
@@ -1373,8 +1389,47 @@ export function useEventSchedule(
       activities,
       availableTracks,
       eventTitle,
+      language,
       showToast,
     ]);
+
+      // Export the compact, attendee-facing event schedule.
+  const exportProgram = useCallback(async () => {
+    const translate = i18n.getFixedT(language);
+
+    if (activities.length === 0) {
+      showToast(
+        translate('toasts.programNothingToExport'),
+        'warning'
+      );
+      return;
+    }
+
+    try {
+      await exportActivitiesToProgramXLSX(
+        activities,
+        eventTitle,
+        language
+      );
+
+      showToast(
+        translate('toasts.programExported'),
+        'success'
+      );
+    } catch (err) {
+      console.error('Failed to export event schedule:', err);
+
+      showToast(
+        translate('toasts.programExportFailed'),
+        'danger'
+      );
+    }
+  }, [
+    activities,
+    eventTitle,
+    language,
+    showToast,
+  ]);
 
   /* ============================================================
      CSV IMPORT
@@ -1445,6 +1500,9 @@ export function useEventSchedule(
                 notes:
                   item.notes ||
                   '',
+
+                  // Speakers is optional.
+                  speakers: item.speakers ?? '',
               })
             );
 
@@ -1519,7 +1577,8 @@ export function useEventSchedule(
           buildMatrixClipboardContent(
             filteredActivities,
             availableTracks,
-            eventTitle
+            eventTitle,
+            language,
           );
 
         /*
@@ -1643,6 +1702,7 @@ export function useEventSchedule(
 
     exportCSV,
     exportMatrix,
+    exportProgram,
     importCSV,
 
     copyForGoogleSheets,

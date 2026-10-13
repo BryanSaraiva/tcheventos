@@ -707,6 +707,7 @@ export function exportActivitiesToCSV(
           'Category',
           'Color',
           'Notes',
+          'Speakers',
         ]
       : [
           'ID',
@@ -718,6 +719,7 @@ export function exportActivitiesToCSV(
           'Categoria',
           'Cor',
           'Notas',
+          'Palestrantes',
         ];
 
   const rows =
@@ -752,6 +754,12 @@ export function exportActivitiesToCSV(
           /"/g,
           '""'
         )}"`,
+        `"${(
+          activity.speakers || ''
+        ).replace(
+          /"/g,
+          '""'
+        )}"`,
       ]
     );
 
@@ -770,141 +778,80 @@ export function exportActivitiesToCSV(
  * That way a CSV exported in PT-BR can still be safely imported after
  * switching the application to English, and vice versa.
  */
-export function parseCSVToActivities(
-  csvContent: string
-): Partial<Activity>[] {
-  const lines =
-    csvContent
-      .split(/\r?\n/)
-      .filter(
-        (line) =>
-          line.trim() !== ''
-      );
+export function parseCSVToActivities(csvText: string): Partial<Activity>[] {
+  const cleanText = csvText.replace(/^\uFEFF/, ''); // Remove UTF-8 BOM
 
-  if (lines.length <= 1) {
-    return [];
-  }
+  // State-machine CSV parser that correctly handles newlines (\n) inside quotes
+  const parseRows = (text: string): string[][] => {
+    const rows: string[][] = [];
+    let row: string[] = [];
+    let cur = '';
+    let inQuotes = false;
 
-  const dataLines =
-    lines.slice(1);
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      const next = text[i + 1];
 
-  const parsedActivities:
-    Partial<Activity>[] = [];
-
-  dataLines.forEach(
-    (line, index) => {
-      const matches =
-        line.match(
-          /(".*?"|[^",\s]+)(?=\s*,|\s*$)/g
-        ) ||
-        line.split(',');
-
-      if (
-        matches.length >= 6
-      ) {
-        const clean = (
-          str: string
-        ) =>
-          (str || '')
-            .replace(
-              /^"(.*)"$/,
-              '$1'
-            )
-            .replace(
-              /""/g,
-              '"'
-            )
-            .trim();
-
-        /*
-         * Expected canonical CSV:
-         * 0 = ID
-         * 1 = Date
-         * 2 = Start Time
-         * 3 = End Time
-         * 4 = Space / Track
-         * 5 = Title
-         * 6 = Category
-         * 7 = Color
-         * 8 = Notes
-         */
-        const date =
-          clean(
-            matches[1] ||
-              matches[0]
-          );
-
-        const startTime =
-          clean(
-            matches[2] ||
-              matches[1]
-          );
-
-        const endTime =
-          clean(
-            matches[3] ||
-              matches[2]
-          );
-
-        const track =
-          clean(
-            matches[4] ||
-              matches[3]
-          );
-
-        const title =
-          clean(
-            matches[5] ||
-              matches[4]
-          );
-
-        const category =
-          matches[6]
-            ? clean(
-                matches[6]
-              )
-            : '';
-
-        const color =
-          matches[7]
-            ? clean(
-                matches[7]
-              )
-            : '#3c78d8';
-
-        const notes =
-          matches[8]
-            ? clean(
-                matches[8]
-              )
-            : '';
-
-        parsedActivities.push(
-          {
-            id:
-              Date.now() +
-              index,
-
-            date,
-
-            startTime,
-
-            endTime,
-
-            track,
-
-            title,
-
-            category,
-
-            color,
-
-            notes,
-          }
-        );
+      if (c === '"') {
+        if (inQuotes && next === '"') {
+          cur += '"';
+          i++; // Skip escaped double quote
+        } else {
+          inQuotes = !inQuotes; // Toggle quote state
+        }
+      } else if (c === ',' && !inQuotes) {
+        row.push(cur);
+        cur = '';
+      } else if ((c === '\r' || c === '\n') && !inQuotes) {
+        if (c === '\r' && next === '\n') {
+          i++; // Skip \n in \r\n
+        }
+        row.push(cur);
+        cur = '';
+        if (row.some((cell) => cell.trim().length > 0)) {
+          rows.push(row);
+        }
+        row = [];
+      } else {
+        cur += c;
       }
     }
-  );
 
-  return parsedActivities;
+    if (cur.length > 0 || row.length > 0) {
+      row.push(cur);
+      if (row.some((cell) => cell.trim().length > 0)) {
+        rows.push(row);
+      }
+    }
+
+    return rows;
+  };
+
+  const allRows = parseRows(cleanText);
+  if (allRows.length < 2) return [];
+
+  // Parse headers to locate column indexes
+  const headers = allRows[0].map((h) => h.trim().toLowerCase());
+
+  let speakersIdx = headers.findIndex((h) =>
+    ['speakers', 'palestrantes', 'palestrante', 'speaker'].includes(h)
+  );
+  if (speakersIdx === -1) speakersIdx = 9;
+
+  return allRows.slice(1).map((cols) => {
+    const parsedId = Number(cols[0]);
+
+    return {
+      id: isNaN(parsedId) ? Date.now() : parsedId,
+      date: cols[1],
+      startTime: cols[2],
+      endTime: cols[3],
+      track: cols[4],
+      title: cols[5],
+      category: cols[6],
+      color: cols[7],
+      notes: cols[8],
+      speakers: cols[speakersIdx] || cols[9] || '',
+    };
+  });
 }

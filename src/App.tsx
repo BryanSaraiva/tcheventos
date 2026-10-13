@@ -50,6 +50,7 @@ export const App: React.FC = () => {
     duplicateActivity,
     exportCSV,
     exportMatrix,
+    exportProgram,
     importCSV,
     copyForGoogleSheets,
   } = useEventSchedule(language);
@@ -225,6 +226,17 @@ export const App: React.FC = () => {
 >
   <i className="fa-solid fa-table-cells-large w-4"></i>
   <span>{t('menu.exportMatrix')}</span>
+</button>
+<button
+  type="button"
+  onClick={() => {
+    void exportProgram();
+    setIsMenuOpen(false);
+  }}
+  className="w-full px-4 py-2.5 text-left text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/60 flex items-center gap-2.5 transition"
+>
+  <i className="fa-solid fa-file-lines text-indigo-600 dark:text-indigo-400 w-4"></i>
+  <span>{t('menu.exportProgram')}</span>
 </button>
 <div className="my-1.5 border-t border-slate-100 dark:border-slate-700/60"></div>
 
