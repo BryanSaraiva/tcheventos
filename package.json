@@ -1,8 +1,14 @@
 {
   "name": "tcheventos",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Uma ferramenta gratuita e de código aberto para criar, organizar e compartilhar programações de eventos.",
   "type": "module",
+  "homepage": "https://bryansaraiva.github.io/tcheventos/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BryanSaraiva/tcheventos.git"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
