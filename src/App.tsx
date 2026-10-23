@@ -113,7 +113,7 @@ export const App: React.FC = () => {
   type="text"
   value={eventTitle}
   maxLength={100}
-  size={Math.max(eventTitle.length, 1)}
+  size={Math.max(eventTitle.length || t('common.eventTitlePlaceholder').length, 1)}
   onChange={(e) => setEventTitle(e.target.value)}
   onBlur={(e) => {
     e.target.scrollLeft = 0;

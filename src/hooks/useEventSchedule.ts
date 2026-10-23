@@ -486,13 +486,10 @@ export function useEventSchedule(
   const [eventTitle, setEventTitle] =
     useState<string>(() => {
       try {
-        return (
-          localStorage.getItem(
-            TITLE_KEY
-          ) || 'Cronograma Oficial'
-        );
+        // Return saved value, or empty string if nothing is saved
+        return localStorage.getItem(TITLE_KEY) || '';
       } catch {
-        return 'Cronograma Oficial';
+        return '';
       }
     });
 
