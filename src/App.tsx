@@ -112,9 +112,11 @@ export const App: React.FC = () => {
             
             {/* Branding & Event Title */}
             <div className="flex items-center space-x-3">
-              <div className="bg-emerald-600 text-white p-2.5 rounded-xl shadow-md flex items-center justify-center">
-                <i className="fa-solid fa-bolt-lightning text-xl"></i>
-              </div>
+              <img
+  src="logo.svg"
+  alt="Tchêventos Logo"
+  className="w-10 h-10 object-contain"
+/>
               <div>
                 <h1 className="font-bold text-lg leading-tight text-slate-900 dark:text-white flex items-center gap-2">
                   <span>Tchêventos</span>
